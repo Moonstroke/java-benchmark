@@ -118,8 +118,15 @@ class MethodBenchmark<T> {
 		}
 	}
 
+	/**
+	 * Wraps a string between quotes, or call {@link Object#toString} on an object.
+	 *
+	 * @param o the object to return as a String
+	 *
+	 * @return a String with integrated quotes (for printing) or the object's toString()
+	 */
 	protected static String toQuotedString(Object o) {
-		return o instanceof String ? '"' + (String)o + '"' : o.toString();
+		return o == null ? "null" : o instanceof String ? '"' + (String)o + '"' : o.toString();
 	}
 
 	protected static <U> int printCall(PrintStream out, Method m, U[] args, Function<U, String> f) {
