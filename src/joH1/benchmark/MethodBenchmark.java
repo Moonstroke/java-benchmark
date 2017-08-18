@@ -52,7 +52,7 @@ class MethodBenchmark<T> {
 	 * @throws Throwable every exception thrown during invocation of the method
 	 */
 	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, IllegalStateException, Throwable {
-		printHeader();
+		printHeader(out, method);
 
 		final int n = expecteds.length;
 		if(args.length != n)
@@ -90,7 +90,7 @@ class MethodBenchmark<T> {
 		if(!(expected != null && checkException != null))
 			throw new IllegalStateException("You can't in the same time expect a result and an exception!");
 
-		printCall(args, o -> o.toString());
+		printCall(out, method, args, o -> o.toString());
 
 		out.print("Expected: ");
 		if(checkException != null)
@@ -122,10 +122,10 @@ class MethodBenchmark<T> {
 		return o instanceof String ? '"' + (String)o + '"' : o.toString();
 	}
 
-	protected <U> int printCall(U[] args, Function<U, String> f) {
+	protected static <U> int printCall(PrintStream out, Method m, U[] args, Function<U, String> f) {
 		StringBuilder builder = new StringBuilder(64);
-		builder.append(method.getDeclaringClass().getSimpleName()).append('.')
-		      .append(method.getName()).append('(');
+		builder.append(m.getDeclaringClass().getSimpleName()).append('.')
+		      .append(m.getName()).append('(');
 		final int k = args.length;
 		if(k != 0) {
 			builder.append(f.apply(args[0]));
@@ -140,11 +140,11 @@ class MethodBenchmark<T> {
 	/**
 	 * Prints a header line before execution of the method.
 	 */
-	protected void printHeader() {
+	protected static void printHeader(PrintStream out, Method m) {
 		StringBuilder headerBuilder = new StringBuilder(64);
 		out.print("Testing ");
 
-		final int l = 8 + printCall(method.getParameterTypes(), (Class<?> c) -> c.getSimpleName());
+		final int l = 8 + printCall(out, m, m.getParameterTypes(), (Class<?> c) -> c.getSimpleName());
 		for(int i = 0; i < l; ++i)
 			out.print('-');
 		out.println();
