@@ -41,6 +41,9 @@ class MethodBenchmark<T> {
 	 * An exception is <i>not supposed to be thrown</i> in this method: any exception caught will be
 	 * rethrown.
 	 *
+	 * @param args      an array of arguments to be passed to the invoked method
+	 * @param expecteds the expected results for each invocation
+	 *
 	 * @throws AssertionError if the value returned by invocation does not return the expected value
 	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
 	 * @throws Throwable every exception thrown during invocation of the method
