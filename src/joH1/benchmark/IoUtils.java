@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 
-class IoUtils {
+public class IoUtils {
 
 
 	/**
