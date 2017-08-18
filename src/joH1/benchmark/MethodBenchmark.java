@@ -2,6 +2,7 @@ package joH1.benchmark;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 
@@ -37,13 +38,20 @@ class MethodBenchmark<T> {
 
 	/**
 	 * Tests the method with the provided values and checks that it returned an expected value.
+	 * An exception is <i>not supposed to be thrown</i> in this method: any exception caught will be
+	 * rethrown.
 	 *
 	 * @throws AssertionError if the value returned by invocation does not return the expected value
 	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
+	 * @throws Throwable every exception thrown during invocation of the method
 	 */
-	public void testNoThrows(Object[][] args, Object[] expecteds) throws AssertionError {
+	public void testNoException(Object[][] args, Object[] expecteds) throws AssertionError, Throwable {
 		printHeader();
+
 		final int n = expecteds.length;
+		if(args.length != n)
+			throw new IllegalArgumentException("args.length != " + n);
+
 		Object[] arg;
 		Object expected, got;
 		for(int i = 0; i < n; ++i) {
@@ -51,7 +59,13 @@ class MethodBenchmark<T> {
 			printCall(arg, o -> o.toString());
 			expected = expecteds[i];
 			out.format("Expected: %s", expected instanceof String ? '"' + (String)expected + '"' : expected.toString());
-			got = method.invoke(instance, arg);
+			try {
+				got = method.invoke(instance, arg);
+			} catch(IllegalAccessException e) {
+				throw new IllegalStateException("Oops, method \"" + method.getName() + "\" is private", e);
+			} catch(InvocationTargetException e) {
+				throw e.getCause();
+			}
 			out.format("Got     : %s", got instanceof String ? '"' + (String)got + '"' : got.toString());
 			if(expected.equals(got)) {
 				out.println("OK");
