@@ -62,7 +62,7 @@ class MethodBenchmark<T> {
 		}
 	}
 
-	protected int printCall(Object[] args, Function<?, String> f) {
+	protected <U> int printCall(U[] args, Function<U, String> f) {
 		StringBuilder builder = new StringBuilder(64);
 		builder.append(method.getDeclaringClass().getSimpleName()).append('.')
 		      .append(method.getName()).append('(');
@@ -70,7 +70,7 @@ class MethodBenchmark<T> {
 		if(k != 0) {
 			builder.append(f.apply(args[0]));
 			for(int i = 1; i < k; ++i)
-				builder.append(", ").append(args[i].toString());
+				builder.append(", ").append(f.apply(args[i]));
 		}
 		builder.append(')');
 		out.println(builder.toString());
