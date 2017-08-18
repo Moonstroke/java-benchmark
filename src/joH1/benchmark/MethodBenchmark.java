@@ -57,30 +57,55 @@ class MethodBenchmark<T> {
 		if(args.length != n)
 			throw new IllegalArgumentException("args.length != " + n);
 
-		Object[] arg;
-		Object expected, got;
 		for(int i = 0; i < n; ++i) {
-			arg = args[i];
-			printCall(arg, o -> o.toString());
-			expected = expecteds[i];
-			out.format("Expected: %s", expected instanceof String ? '"' + (String)expected + '"' : expected.toString());
-			try {
-				got = method.invoke(instance, arg);
-			} catch(IllegalAccessException e) {
-				throw new IllegalStateException("Oops, method \"" + method.getName() + "\" is private", e);
-			} catch(InvocationTargetException e) {
-				throw e.getCause();
-			}
-			out.format("Got     : %s", got instanceof String ? '"' + (String)got + '"' : got.toString());
-			if(expected.equals(got)) {
-				out.println("OK");
-				out.println();
-			} else {
-				throw new AssertionError(expected + " != " + got);
-			}
+			singleTest(arg[i], expected[i], null);
 		}
 		return n;
 	}
+
+	/**
+	 * A test for a single invocation of the method.
+	 *
+	 * @param args the arguments to be passed to the method
+	 * @param expected the result one is expected to obtain on invocation of the method with
+	 *                 these arguments. <i>Must</i> be {@code null} if an exception is
+	 *                 expected
+	 * @param checkException a {@link Predicate} that checks the exception that was thrown is
+	 *                       correct. <i>Must</i> be {@code null} if no exception is expected.<br>
+	 *                       For example: {@code e -> e instanceof IndexOutOfBoundsException} is
+	 *                       a fair enough predicate if tested on {@link java.util.ArrayList#get}
+	 *
+	 * @throws AssertionError if the value obtained is not {@linkplain Object#equals equals} to the
+	 *                        expected value
+	 * @throws IllegalStateException if <i>not</i> either of {@code expected} or
+	 *                               {@code checkException} is {@code null}
+	 * @throws Throwable any exception caught while unexpected (<i>ie</i> {@code checkException} is
+	 *                   {@code null} or returned {@code false})
+	 */
+	public void singleTest(Object[] args, Object expected, Predicate<? extends Throwable> checkException)
+	throws AssertionError, IllegalStateException, Throwable {
+
+		if(!(expected == null ^ checkException == null))
+			throw new IllegalStateException("You can't in the same time expect a result and an exception!")
+
+		printCall(arg, o -> o.toString());
+		out.format("Expected: %s", expected instanceof String ? '"' + (String)expected + '"' : expected.toString());
+		try {
+			got = method.invoke(instance, arg);
+		} catch(IllegalAccessException e) {
+			throw new IllegalStateException("Oops, method \"" + method.getName() + "\" is private", e);
+		} catch(InvocationTargetException e) {
+			throw e.getCause();
+		}
+		out.format("Got     : %s", got instanceof String ? '"' + (String)got + '"' : got.toString());
+		if(expected.equals(got)) {
+			out.println("OK");
+			out.println();
+		} else {
+			throw new AssertionError(expected + " != " + got);
+		}
+	}
+
 
 	protected <U> int printCall(U[] args, Function<U, String> f) {
 		StringBuilder builder = new StringBuilder(64);
