@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 class MethodBenchmark<T> {
@@ -50,7 +51,7 @@ class MethodBenchmark<T> {
 	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
 	 * @throws Throwable every exception thrown during invocation of the method
 	 */
-	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, Throwable {
+	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, IllegalStateException, Throwable {
 		printHeader();
 
 		final int n = expecteds.length;
@@ -58,7 +59,7 @@ class MethodBenchmark<T> {
 			throw new IllegalArgumentException("args.length != " + n);
 
 		for(int i = 0; i < n; ++i) {
-			singleTest(arg[i], expected[i], null);
+			singleTest(args[i], expecteds[i], null);
 		}
 		return n;
 	}
@@ -82,30 +83,40 @@ class MethodBenchmark<T> {
 	 * @throws Throwable any exception caught while unexpected (<i>ie</i> {@code checkException} is
 	 *                   {@code null} or returned {@code false})
 	 */
-	public void singleTest(Object[] args, Object expected, Predicate<? extends Throwable> checkException)
+	@SuppressWarnings("unchecked")
+	public <E extends Throwable> void singleTest(Object[] args, Object expected, Predicate<E> checkException)
 	throws AssertionError, IllegalStateException, Throwable {
 
-		if(!(expected == null ^ checkException == null))
-			throw new IllegalStateException("You can't in the same time expect a result and an exception!")
+		if(!(expected != null && checkException != null))
+			throw new IllegalStateException("You can't in the same time expect a result and an exception!");
 
-		printCall(arg, o -> o.toString());
-		out.format("Expected: %s", expected instanceof String ? '"' + (String)expected + '"' : expected.toString());
+		printCall(args, o -> o.toString());
+
+		out.print("Expected: ");
+		if(checkException != null)
+			out.println("Exception");
+		else
+			out.println(expected instanceof String ? '"' + (String)expected + '"' : expected.toString());
+		Object got = null;
 		try {
-			got = method.invoke(instance, arg);
+			got = method.invoke(instance, args);
 		} catch(IllegalAccessException e) {
 			throw new IllegalStateException("Oops, method \"" + method.getName() + "\" is private", e);
 		} catch(InvocationTargetException e) {
-			throw e.getCause();
+			if(checkException == null)
+				throw e.getCause();
+			else {
+				assert checkException.test((E)e) : "Exception caught did not pass the test";
+			}
 		}
 		out.format("Got     : %s", got instanceof String ? '"' + (String)got + '"' : got.toString());
-		if(expected.equals(got)) {
+		if(got == null || got.equals(expected)) {
 			out.println("OK");
 			out.println();
 		} else {
 			throw new AssertionError(expected + " != " + got);
 		}
 	}
-
 
 	protected <U> int printCall(U[] args, Function<U, String> f) {
 		StringBuilder builder = new StringBuilder(64);
