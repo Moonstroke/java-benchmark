@@ -96,7 +96,7 @@ class MethodBenchmark<T> {
 		if(checkException != null)
 			out.println("Exception");
 		else
-			out.println(expected instanceof String ? '"' + (String)expected + '"' : expected.toString());
+			out.println(toQuotedString(expected));
 		Object got = null;
 		try {
 			got = method.invoke(instance, args);
@@ -109,13 +109,17 @@ class MethodBenchmark<T> {
 				assert checkException.test((E)e) : "Exception caught did not pass the test";
 			}
 		}
-		out.format("Got     : %s", got instanceof String ? '"' + (String)got + '"' : got.toString());
+		out.format("Got     : %s", toQuotedString(got));
 		if(got == null || got.equals(expected)) {
 			out.println("OK");
 			out.println();
 		} else {
 			throw new AssertionError(expected + " != " + got);
 		}
+	}
+
+	protected static String toQuotedString(Object o) {
+		return o instanceof String ? '"' + (String)o + '"' : o.toString();
 	}
 
 	protected <U> int printCall(U[] args, Function<U, String> f) {
