@@ -44,11 +44,13 @@ class MethodBenchmark<T> {
 	 * @param args      an array of arguments to be passed to the invoked method
 	 * @param expecteds the expected results for each invocation
 	 *
+	 * @return the number of tests passed
+	 *
 	 * @throws AssertionError if the value returned by invocation does not return the expected value
 	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
 	 * @throws Throwable every exception thrown during invocation of the method
 	 */
-	public void testNoException(Object[][] args, Object[] expecteds) throws AssertionError, Throwable {
+	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, Throwable {
 		printHeader();
 
 		final int n = expecteds.length;
@@ -77,6 +79,7 @@ class MethodBenchmark<T> {
 				throw new AssertionError(expected + " != " + got);
 			}
 		}
+		return n;
 	}
 
 	protected <U> int printCall(U[] args, Function<U, String> f) {
