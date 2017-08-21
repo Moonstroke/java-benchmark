@@ -3,7 +3,7 @@ package joH1.benchmark;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.function.Function;
-
+import java.util.function.Predicate;
 
 public class IoUtils {
 
@@ -52,5 +52,15 @@ public class IoUtils {
 			out.print('-');
 		out.println();
 	}
+
+	@SafeVarargs
+	@SuppressWarnings({"varargs", "rawtypes", "unchecked"})
+	protected static <E extends Exception> Predicate<E>[] checks(Predicate<E>... checks) {
+		final int l = checks.length;
+		Predicate[] copy = new Predicate[l];
+		System.arraycopy(checks, 0, copy, 0, l);
+		return copy;
+	}
+
 
 }
