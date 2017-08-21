@@ -37,32 +37,6 @@ class MethodBenchmark<T> {
 		this.out = out;
 	}
 
-	/**
-	 * Tests the method with the provided values and checks that it returned an expected value.
-	 * An exception is <i>not supposed to be thrown</i> in this method: any exception caught will be
-	 * rethrown.
-	 *
-	 * @param args      an array of arguments to be passed to the invoked method
-	 * @param expecteds the expected results for each invocation
-	 *
-	 * @return the number of tests passed
-	 *
-	 * @throws AssertionError if the value returned by invocation does not return the expected value
-	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
-	 * @throws Throwable every exception thrown during invocation of the method
-	 */
-	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, IllegalStateException, Throwable {
-		IoUtils.printHeader(out, method);
-
-		final int n = expecteds.length;
-		if(args.length != n)
-			throw new IllegalArgumentException("args.length != " + n);
-
-		for(int i = 0; i < n; ++i) {
-			singleTest(args[i], expecteds[i], null);
-		}
-		return n;
-	}
 
 	/**
 	 * A test for a single invocation of the method.
@@ -116,6 +90,33 @@ class MethodBenchmark<T> {
 		} else {
 			throw new AssertionError(expected + " != " + got);
 		}
+	}
+
+	/**
+	 * Tests the method with the provided values and checks that it returned an expected value.
+	 * An exception is <i>not supposed to be thrown</i> in this method: any exception caught will be
+	 * rethrown.
+	 *
+	 * @param args      an array of arguments to be passed to the invoked method
+	 * @param expecteds the expected results for each invocation
+	 *
+	 * @return the number of tests passed
+	 *
+	 * @throws AssertionError if the value returned by invocation does not return the expected value
+	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
+	 * @throws Throwable every exception thrown during invocation of the method
+	 */
+	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, IllegalStateException, Throwable {
+		IoUtils.printHeader(out, method);
+
+		final int n = expecteds.length;
+		if(args.length != n)
+			throw new IllegalArgumentException("args.length != " + n);
+
+		for(int i = 0; i < n; ++i) {
+			singleTest(args[i], expecteds[i], null);
+		}
+		return n;
 	}
 
 }
