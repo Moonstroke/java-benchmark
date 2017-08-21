@@ -103,15 +103,15 @@ class MethodBenchmark<T> {
 	 * @return the number of tests passed
 	 *
 	 * @throws AssertionError if the value returned by invocation does not return the expected value
-	 * @throws IllegalArgumentException if {@code expecteds.length != values.length}
+	 * @throws IllegalArgumentException if {@code expecteds.length != args.length}
 	 * @throws Throwable every exception thrown during invocation of the method
 	 */
 	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, IllegalStateException, Throwable {
 		IoUtils.printHeader(out, method);
 
-		final int n = expecteds.length;
-		if(args.length != n)
-			throw new IllegalArgumentException("args.length != " + n);
+		final int n = args.length;
+		if(expecteds.length != n)
+			throw new IllegalArgumentException("expecteds.length != " + n);
 
 		for(int i = 0; i < n; ++i) {
 			singleTest(args[i], expecteds[i], null);
