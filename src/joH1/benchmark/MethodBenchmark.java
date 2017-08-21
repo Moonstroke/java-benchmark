@@ -39,30 +39,39 @@ class MethodBenchmark<T> {
 
 
 	/**
-	 * A test for a single invocation of the method.
+	 * A test for a single invocation of the method, expecting either:
+	 * <ul>
+	 *     <li>a usual return value; in this case {@code checkException} <strong>must</strong> be
+	 *         {@code null} ({@code null} can be a valid return value for the invocation, so
+	 *         {@code expected} <strong>may</strong> be {@code null})
+	 *     </li>
+	 *     <li>the throwing of an exception, in this case {@code expected} <strong>must</strong> be
+	 *         {@code null}, and {@code checkException} must <strong>not</strong> be {@code null}.
+	 *     </li>
+	 * </ul>
 	 *
 	 * @param args the arguments to be passed to the method
 	 * @param expected the result one is expected to obtain on invocation of the method with
-	 *                 these arguments. <i>Must</i> be {@code null} if an exception is
+	 *                 these arguments. <strong>Must</strong> be {@code null} if an exception is
 	 *                 expected
 	 * @param checkException a {@link Predicate} that checks the exception that was thrown is
-	 *                       correct. <i>Must</i> be {@code null} if no exception is expected.<br>
+	 *                       correct. <strong>Must</strong> be {@code null} if no exception is expected.
 	 *                       For example: {@code e -> e instanceof IndexOutOfBoundsException} is
 	 *                       a fair enough predicate if tested on {@link java.util.ArrayList#get}
 	 *
 	 * @throws AssertionError if the value obtained is not {@linkplain Object#equals equals} to the
 	 *                        expected value
-	 * @throws IllegalStateException if <i>not</i> either of {@code expected} or
-	 *                               {@code checkException} is {@code null}
-	 * @throws Throwable any exception caught while unexpected (<i>ie</i> {@code checkException} is
+	 * @throws IllegalArgumentException if both {@code expected} or {@code checkException} are
+	 *                               {@code != null}
+	 * @throws Throwable any exception caught while unexpected (ie {@code checkException} is
 	 *                   {@code null} or returned {@code false})
 	 */
 	@SuppressWarnings("unchecked")
 	public <E extends Throwable> void singleTest(Object[] args, Object expected, Predicate<E> checkException)
-	throws AssertionError, IllegalStateException, Throwable {
+	throws AssertionError, Throwable {
 
 		if(!(expected != null && checkException != null))
-			throw new IllegalStateException("You can't in the same time expect a result and an exception!");
+			throw new IllegalArgumentException("You can't in the same time expect a result and an exception!");
 
 		IoUtils.printCall(out, method, args, o -> o.toString());
 
@@ -94,7 +103,7 @@ class MethodBenchmark<T> {
 
 	/**
 	 * Tests the method with the provided values and checks that it returned an expected value.
-	 * An exception is <i>not supposed to be thrown</i> in this method: any exception caught will be
+	 * An exception is <strong>not supposed to be thrown</strong> in this method: any exception caught will be
 	 * rethrown.
 	 *
 	 * @param args      an array of arguments to be passed to the invoked method
@@ -106,7 +115,7 @@ class MethodBenchmark<T> {
 	 * @throws IllegalArgumentException if {@code expecteds.length != args.length}
 	 * @throws Throwable every exception thrown during invocation of the method
 	 */
-	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, IllegalStateException, Throwable {
+	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, Throwable {
 		IoUtils.printHeader(out, method);
 
 		final int n = args.length;
@@ -121,7 +130,7 @@ class MethodBenchmark<T> {
 
 	/**
 	 * Tests the method with the provided arguments and expects an exception.
-	 * Not catching an exception is <i>not</i> nominal execution and an {@link AssertionError} will
+	 * Not catching an exception is <strong>not</strong> nominal execution and an {@link AssertionError} will
 	 * be thrown.
 	 *
 	 * @param args   an array of arguments to be passed to the invoked method
@@ -131,8 +140,10 @@ class MethodBenchmark<T> {
 	 *
 	 * @throws AssertionError if an exception is not caught or if it does not pass the {@code check}
 	 * @throws IllegalArgumentException if {@code checks.length != args.length}
+	 * @throws IllegalStateException if the invocation of {@link singleTest} throws an exception
+	 *                               other than {@code AssertionError}
 	 */
-	public int <E extends Throwable> testException(Object[][] args, Predicate<E>[] checks) throws AssertionError, IllegalStateException {
+	public <E extends Throwable> int testException(Object[][] args, Predicate<E>[] checks) throws AssertionError {
 		IoUtils.printHeader(out, method);
 
 		final int n = args.length;
@@ -140,9 +151,16 @@ class MethodBenchmark<T> {
 			throw new IllegalArgumentException("checks.length != " + n);
 
 		for(int i = 0; i < n; ++i) {
-			singleTest(args[i], null, checks[i]);
+			try {
+				singleTest(args[i], null, checks[i]);
+			} catch(AssertionError e) {
+				throw e;
+			} catch(Throwable t) {
+				throw new IllegalStateException("Unexpected exception caught", t);
+			}
 		}
 		return n;
 	}
+
 }
 
