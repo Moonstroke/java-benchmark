@@ -119,5 +119,30 @@ class MethodBenchmark<T> {
 		return n;
 	}
 
+	/**
+	 * Tests the method with the provided arguments and expects an exception.
+	 * Not catching an exception is <i>not</i> nominal execution and an {@link AssertionError} will
+	 * be thrown.
+	 *
+	 * @param args   an array of arguments to be passed to the invoked method
+	 * @param checks the checks to evaluate the caught exception with
+	 *
+	 * @return the number of tests passed
+	 *
+	 * @throws AssertionError if an exception is not caught or if it does not pass the {@code check}
+	 * @throws IllegalArgumentException if {@code checks.length != args.length}
+	 */
+	public int <E extends Throwable> testException(Object[][] args, Predicate<E>[] checks) throws AssertionError, IllegalStateException {
+		IoUtils.printHeader(out, method);
+
+		final int n = args.length;
+		if(checks.length != n)
+			throw new IllegalArgumentException("checks.length != " + n);
+
+		for(int i = 0; i < n; ++i) {
+			singleTest(args[i], null, checks[i]);
+		}
+		return n;
+	}
 }
 
