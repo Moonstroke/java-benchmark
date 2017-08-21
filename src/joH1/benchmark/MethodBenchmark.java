@@ -32,6 +32,21 @@ class MethodBenchmark<T> {
 		this.method = method;
 	}
 
+	/**
+	 * This constructor retrieves the method through reflection with the provided method name and
+	 * parameter types. The method <strong>must</strong> be declared.
+	 *
+	 * @throws NoSuchMethodException if the method could not be found
+	 * @throws SecurityException if a {@linkplain SecurityManager security manager} is present and
+	 *                           denies access to the method
+	 *
+	 * @see Class#getDeclaredMethod
+	 */
+	public MethodBenchmark(T instance, String methodName, Class<?>... paramTypes) throws NoSuchMethodException {
+		this.instance = instance;
+		this.method = instance.getClass().getDeclaredMethod(methodName, paramTypes);
+	}
+
 
 	public void setOutputStream(PrintStream out) {
 		this.out = out;

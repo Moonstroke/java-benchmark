@@ -10,6 +10,12 @@ public class StaticMethodBenchmark extends MethodBenchmark<Void> {
 		super(null, method);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public StaticMethodBenchmark(Class<?> cls, String methodName, Class<?>... paramTypes) throws NoSuchMethodException {
+		super(null, cls.getDeclaredMethod(methodName, paramTypes));
+	}
 
 }
 
