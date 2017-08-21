@@ -107,7 +107,7 @@ class MethodBenchmark<T> {
 				assert checkException.test((E)e) : "Exception caught did not pass the test";
 			}
 		}
-		out.format("Got     : %s", IoUtils.toQuotedString(got));
+		out.format("Got     : %s%n", IoUtils.toQuotedString(got));
 		if(got == null || got.equals(expected)) {
 			out.println("OK");
 			out.println();

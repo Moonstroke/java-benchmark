@@ -44,8 +44,7 @@ public class IoUtils {
 	 * Prints a header line before execution of the method.
 	 */
 	protected static void printHeader(PrintStream out, Method m) {
-		StringBuilder headerBuilder = new StringBuilder(64);
-		out.print("Testing ");
+		out.print("Testing method: ");
 
 		final int l = 8 + printCall(out, m, m.getParameterTypes(), (Class<?> c) -> c.getSimpleName());
 		for(int i = 0; i < l; ++i)
