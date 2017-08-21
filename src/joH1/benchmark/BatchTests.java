@@ -10,19 +10,19 @@ class BatchTests {
 	}
 
 
-	private int getValue() {
+	protected int getValue() {
 		return value;
 	}
 
-	private void throwException() throws Exception {
+	protected void throwException() throws Exception {
 		throw new Exception("crac");
 	}
 
-	private static boolean returnTrue() {
+	protected static boolean returnTrue() {
 		return true;
 	}
 
-	private static void throwStatic() throws NullPointerException {
+	protected static void throwStatic() throws NullPointerException {
 		throw new NullPointerException();
 	}
 
