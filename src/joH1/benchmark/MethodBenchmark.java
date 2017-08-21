@@ -85,7 +85,7 @@ class MethodBenchmark<T> {
 	public <E extends Throwable> void singleTest(Object[] args, Object expected, Predicate<E> checkException)
 	throws AssertionError, Throwable {
 
-		if(!(expected != null && checkException != null))
+		if(expected != null && checkException != null)
 			throw new IllegalArgumentException("You can't in the same time expect a result and an exception!");
 
 		IoUtils.printCall(out, method, args, o -> o.toString());
