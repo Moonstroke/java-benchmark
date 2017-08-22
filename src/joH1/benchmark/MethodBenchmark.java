@@ -195,5 +195,21 @@ class MethodBenchmark<T> {
 		out.println(msg);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <E extends Object> E exec(Object[] params) throws Throwable {
+
+		// check params
+		IOUtils.printCall(out, method, params, IOUtils::toQuotedString);
+		E res = null;
+		try {
+			res = (E)method.invoke(instance, params);
+		} catch(IllegalAccessException e) {
+			throw new IllegalStateException("Oops, method \"" + method.getName() + "\" is private", e);
+		} catch(InvocationTargetException e) {
+			throw e.getCause();
+		}
+		out.println("Returned: " + IOUtils.toQuotedString(res));
+		return res;
+	}
 }
 
