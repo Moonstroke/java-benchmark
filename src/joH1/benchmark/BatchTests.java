@@ -1,5 +1,8 @@
 package joH1.benchmark;
 
+import static joH1.benchmark.IOUtils.checks;
+
+
 class BatchTests {
 
 	private int value;
@@ -41,10 +44,10 @@ class BatchTests {
 			Object[][] noargs = new Object[][] {new Object[] {}};
 
 			bm_getValue.testNoException(noargs, new Integer[] {42});
-			bm_throwException.testException(noargs, IoUtils.checks(e -> e.getMessage().equals("crac")));
+			bm_throwException.testException(noargs, checks(e -> e.getMessage().equals("crac")));
 
 			sbm_returnTrue.testNoException(noargs, new Boolean[] {Boolean.TRUE});
-			sbm_throwStatic.testException(noargs, IoUtils.checks(e -> e.getClass().equals(NullPointerException.class)));
+			sbm_throwStatic.testException(noargs, checks(e -> e.getClass().equals(NullPointerException.class)));
 		} catch(Throwable e) {
 			e.printStackTrace();
 		}

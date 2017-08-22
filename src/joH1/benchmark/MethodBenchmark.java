@@ -88,13 +88,13 @@ class MethodBenchmark<T> {
 		if(expected != null && checkException != null)
 			throw new IllegalArgumentException("You can't in the same time expect a result and an exception!");
 
-		IoUtils.printCall(out, method, args, o -> o.toString());
+		IOUtils.printCall(out, method, args, o -> o.toString());
 
 		out.print("Expected: ");
 		if(checkException != null)
 			out.println("Exception");
 		else
-			out.println(IoUtils.toQuotedString(expected));
+			out.println(IOUtils.toQuotedString(expected));
 		Object got = null;
 		try {
 			got = method.invoke(instance, args);
@@ -104,10 +104,10 @@ class MethodBenchmark<T> {
 			if(checkException == null)
 				throw e.getCause();
 			else {
-				assert checkException.test((E)e) : "Exception caught did not pass the test";
+				assert checkException.test((X)e) : "Exception caught did not pass the test";
 			}
 		}
-		out.format("Got     : %s%n", IoUtils.toQuotedString(got));
+		out.format("Got     : %s%n", IOUtils.toQuotedString(got));
 		if(got == null || got.equals(expected)) {
 			out.println("OK");
 			out.println();
@@ -131,7 +131,7 @@ class MethodBenchmark<T> {
 	 * @throws Throwable every exception thrown during invocation of the method
 	 */
 	public int testNoException(Object[][] args, Object[] expecteds) throws AssertionError, Throwable {
-		IoUtils.printHeader(out, method);
+		IOUtils.printHeader(out, method);
 
 		final int n = args.length;
 		if(expecteds.length != n)
@@ -159,7 +159,7 @@ class MethodBenchmark<T> {
 	 *                               other than {@code AssertionError}
 	 */
 	public <X extends Exception> int testException(Object[][] args, Predicate<X>[] checks) throws AssertionError {
-		IoUtils.printHeader(out, method);
+		IOUtils.printHeader(out, method);
 
 		final int n = args.length;
 		if(checks.length != n)

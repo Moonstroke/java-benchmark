@@ -5,13 +5,13 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class IoUtils {
+public class IOUtils {
 
 
 	/**
 	 * This is a {@code static} class
 	 */
-	private IoUtils() {}
+	private IOUtils() {}
 
 
 	/**
