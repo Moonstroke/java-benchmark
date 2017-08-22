@@ -26,7 +26,7 @@ public class IOUtils {
 	}
 
 	protected static <U> int printCall(PrintStream out, Method m, U[] args, Function<U, String> f) {
-		StringBuilder builder = new StringBuilder(64);
+		StringBuilder builder = new StringBuilder(100);
 		builder.append(m.getDeclaringClass().getSimpleName()).append('.')
 		      .append(m.getName()).append('(');
 		final int k = args.length;
