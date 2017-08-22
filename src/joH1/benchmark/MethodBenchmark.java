@@ -181,10 +181,19 @@ class MethodBenchmark<T> {
 		return n;
 	}
 
-
 	public <E> void assertEquals(E o1, E o2) throws AssertionError{
 		assert (o1 == null && o2 == null) || o1.equals(o2)
 		       : IOUtils.toQuotedString(o1) + " != " + IOUtils.toQuotedString(o2);
 	}
+
+	public void log(String msg) {
+		out.print(method.getDeclaringClass().getSimpleName());
+		out.print('#');
+		out.print(method.getName());
+		out.print(": ");
+
+		out.println(msg);
+	}
+
 }
 

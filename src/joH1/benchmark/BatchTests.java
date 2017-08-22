@@ -50,7 +50,9 @@ class BatchTests {
 			sbm_throwStatic.testException(noargs, checks(e -> e.getClass().equals(NullPointerException.class)));
 
 			// Failing tests
+			sbm_returnTrue.log("Should fail");
 			sbm_returnTrue.testException(noargs, checks(e -> e instanceof Exception));
+			sbm_returnTrue.log("Should fail");
 			sbm_throwStatic.testNoException(noargs, new Integer[] {42});
 
 		} catch(Throwable e) {
