@@ -27,6 +27,9 @@ class MethodBenchmark<T> {
 	protected PrintStream out = System.err;
 
 
+	/**
+	 * Constructor
+	 */
 	public MethodBenchmark(T instance, Method method) {
 		this.instance = instance;
 		this.method = method;
@@ -181,11 +184,25 @@ class MethodBenchmark<T> {
 		return n;
 	}
 
+	/**
+	 * Checks that two objects are {@linkplain Object#equals equal}.<br>
+	 * If they are not, an {@link AssertionError} is thrown.
+	 *
+	 * @param o1 The first object to compare
+	 * @param o2 The second object to compare
+	 *
+	 * @throws AssertionError if the two objects are not {@link Object#equals}
+	 */
 	public <E> void assertEquals(E o1, E o2) throws AssertionError{
 		assert (o1 == null && o2 == null) || o1.equals(o2)
 		       : IOUtils.toQuotedString(o1) + " != " + IOUtils.toQuotedString(o2);
 	}
 
+	/**
+	 * Writes a message in the stream with log circumstances: name of the method, of its class.
+	 *
+	 * @param msg The message to print
+	 */
 	public void log(String msg) {
 		out.print(method.getDeclaringClass().getSimpleName());
 		out.print('#');
@@ -195,10 +212,20 @@ class MethodBenchmark<T> {
 		out.println(msg);
 	}
 
+	/**
+	 * Executes the method with the provided parameters.
+	 *
+	 * @param params The arguments to give the method on invocation
+	 *
+	 * @return The value returned by the invocation
+	 *
+	 * @throws IllegalArgumentException if the provided arguments don't match the arguments' types
+	 *                                  and number of the method
+	 * @throws Throwable any method thrown by the invocation
+	 */
 	@SuppressWarnings("unchecked")
-	public <E extends Object> E exec(Object[] params) throws Throwable {
+	public <E> E exec(Object... params) throws Throwable {
 
-		// check params
 		IOUtils.printCall(out, method, params, IOUtils::toQuotedString);
 		E res = null;
 		try {
