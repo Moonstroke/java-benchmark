@@ -95,25 +95,29 @@ class MethodBenchmark<T> {
 			out.println("Exception");
 		else
 			out.println(IOUtils.toQuotedString(expected));
+
+		out.print("Got     : ");
 		Object got = null;
 		try {
 			got = method.invoke(instance, args);
+			if(checkException != null)
+				throw new AssertionError("Should have thrown an exception");
+
+			assertEquals(got, expected);
+			out.println(IOUtils.toQuotedString(got));
 		} catch(IllegalAccessException e) {
 			throw new IllegalStateException("Oops, method \"" + method.getName() + "\" is private", e);
 		} catch(InvocationTargetException e) {
+			Throwable t = e.getCause();
 			if(checkException == null)
-				throw e.getCause();
+				throw t;
 			else {
-				assert checkException.test((X)e) : "Exception caught did not pass the test";
+				assert checkException.test((X)t) : "Exception caught did not pass the test";
+				out.println("Exception");
 			}
 		}
-		out.format("Got     : %s%n", IOUtils.toQuotedString(got));
-		if(got == null || got.equals(expected)) {
-			out.println("OK");
-			out.println();
-		} else {
-			throw new AssertionError(expected + " != " + got);
-		}
+		out.println("OK");
+		out.println();
 	}
 
 	/**
@@ -177,5 +181,10 @@ class MethodBenchmark<T> {
 		return n;
 	}
 
+
+	public <E> void assertEquals(E o1, E o2) throws AssertionError{
+		assert (o1 == null && o2 == null) || o1.equals(o2)
+		       : IOUtils.toQuotedString(o1) + " != " + IOUtils.toQuotedString(o2);
+	}
 }
 
