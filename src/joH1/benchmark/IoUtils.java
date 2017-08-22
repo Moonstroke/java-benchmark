@@ -54,9 +54,9 @@ public class IoUtils {
 
 	@SafeVarargs
 	@SuppressWarnings({"varargs", "rawtypes", "unchecked"})
-	protected static <E extends Exception> Predicate<E>[] checks(Predicate<E>... checks) {
+	protected static <X extends Exception> Predicate<X>[] checks(Predicate<X>... checks) {
 		final int l = checks.length;
-		Predicate[] copy = new Predicate[l];
+		Predicate<X>[] copy = new Predicate[l];
 		System.arraycopy(checks, 0, copy, 0, l);
 		return copy;
 	}

@@ -82,7 +82,7 @@ class MethodBenchmark<T> {
 	 *                   {@code null} or returned {@code false})
 	 */
 	@SuppressWarnings("unchecked")
-	public <E extends Throwable> void singleTest(Object[] args, Object expected, Predicate<E> checkException)
+	public <X extends Exception> void singleTest(Object[] args, Object expected, Predicate<X> checkException)
 	throws AssertionError, Throwable {
 
 		if(expected != null && checkException != null)
@@ -158,7 +158,7 @@ class MethodBenchmark<T> {
 	 * @throws IllegalStateException if the invocation of {@link singleTest} throws an exception
 	 *                               other than {@code AssertionError}
 	 */
-	public <E extends Throwable> int testException(Object[][] args, Predicate<E>[] checks) throws AssertionError {
+	public <X extends Exception> int testException(Object[][] args, Predicate<X>[] checks) throws AssertionError {
 		IoUtils.printHeader(out, method);
 
 		final int n = args.length;
