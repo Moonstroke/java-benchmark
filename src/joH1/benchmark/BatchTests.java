@@ -29,6 +29,7 @@ class BatchTests {
 		throw new NullPointerException();
 	}
 
+
 	public static void main(String[] args) {
 
 		BatchTests batch = new BatchTests();
@@ -40,14 +41,18 @@ class BatchTests {
 			StaticMethodBenchmark sbm_returnTrue = new StaticMethodBenchmark(BatchTests.class, "returnTrue");
 			StaticMethodBenchmark sbm_throwStatic = new StaticMethodBenchmark(BatchTests.class, "throwStatic");
 
-
-			Object[][] noargs = new Object[][] {new Object[] {}};
+			final Object[][] noargs = {{}};
 
 			bm_getValue.testNoException(noargs, new Integer[] {42});
 			bm_throwException.testException(noargs, checks(e -> e.getMessage().equals("crac")));
 
 			sbm_returnTrue.testNoException(noargs, new Boolean[] {Boolean.TRUE});
 			sbm_throwStatic.testException(noargs, checks(e -> e.getClass().equals(NullPointerException.class)));
+
+			// Failing tests
+			sbm_returnTrue.testException(noargs, checks(e -> e instanceof Exception));
+			sbm_throwStatic.testNoException(noargs, new Integer[] {42});
+
 		} catch(Throwable e) {
 			e.printStackTrace();
 		}
