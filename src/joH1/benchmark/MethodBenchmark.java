@@ -30,7 +30,9 @@ class MethodBenchmark<T> {
 	/**
 	 * Constructor
 	 */
-	public MethodBenchmark(T instance, Method method) {
+	public MethodBenchmark(T instance, Method method) throws IllegalAccessException {
+		if(!method.isAccessible())
+			throw new IllegalAccessException("Method \"" + method.getName() + "\" is not accessible");
 		this.instance = instance;
 		this.method = method;
 	}
@@ -193,7 +195,7 @@ class MethodBenchmark<T> {
 	 *
 	 * @throws AssertionError if the two objects are not {@link Object#equals}
 	 */
-	public <E> void assertEquals(E o1, E o2) throws AssertionError{
+	public <E> void assertEquals(E o1, E o2) throws AssertionError {
 		assert (o1 == null && o2 == null) || o1.equals(o2)
 		       : IOUtils.toQuotedString(o1) + " != " + IOUtils.toQuotedString(o2);
 	}
