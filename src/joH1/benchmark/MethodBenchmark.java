@@ -2,6 +2,7 @@ package joH1.benchmark;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,9 +31,9 @@ class MethodBenchmark<T> {
 	/**
 	 * Constructor
 	 */
-	public MethodBenchmark(T instance, Method method) throws IllegalAccessException {
-		if(!method.isAccessible())
-			throw new IllegalAccessException("Method \"" + method.getName() + "\" is not accessible");
+	public MethodBenchmark(T instance, Method method) {
+		if(Modifier.isPrivate(method.getModifiers()))
+			throw new IllegalArgumentException("Method \"" + method.getName() + "\" is private");
 		this.instance = instance;
 		this.method = method;
 	}
@@ -48,8 +49,7 @@ class MethodBenchmark<T> {
 	 * @see Class#getDeclaredMethod
 	 */
 	public MethodBenchmark(T instance, String methodName, Class<?>... paramTypes) throws NoSuchMethodException {
-		this.instance = instance;
-		this.method = instance.getClass().getDeclaredMethod(methodName, paramTypes);
+		this(instance, instance.getClass().getDeclaredMethod(methodName, paramTypes));
 	}
 
 
