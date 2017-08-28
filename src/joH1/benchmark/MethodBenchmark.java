@@ -6,6 +6,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 
 class MethodBenchmark<T> {
@@ -240,5 +242,130 @@ class MethodBenchmark<T> {
 		out.println("Returned: " + IOUtils.toQuotedString(res));
 		return res;
 	}
-}
 
+
+	/**
+	 * Executes the method once with the given arguments, and returns the execution time,
+	 * in seconds
+	 *
+	 * @param args The arguments to pass to the method
+	 * @param dateFormatter A DateFormat to format the execution time with.
+	                        Can be {@code null}
+	 * @param doOutput if {@code true}, will print values in the output stream {@link out}
+	 *
+	 * @return The time the execution of the method took (in ms)
+	 *
+	 * @see timeNanos returns exec time in ns instead of ms; can be more precise for short
+	 *                methods. Use that rather than this
+	 */
+	public long time(Object[] args, DateFormat dateFormatter, boolean doOutput) {
+
+		long before, after, diff;
+
+		before = System.currentTimeMillis();
+		try {
+			method.invoke(instance, args);
+		} catch(IllegalAccessException | InvocationTargetException e) {
+			throw new IllegalStateException(e);
+		}
+		after = System.currentTimeMillis();
+
+		 diff = after - before;
+
+		if(doOutput) {
+			if(dateFormatter == null)
+				dateFormatter = new SimpleDateFormat("ss.SSS");
+
+			IOUtils.printHeader(out, method);
+
+			out.format("Time before = %d: ", before);
+			out.println(dateFormatter.format(before));
+			out.format("Time after  = %d: ", after);
+			out.println(dateFormatter.format(after));
+			out.format("Difference  = %d: ", diff);
+			out.println(dateFormatter.format(diff));
+			out.println();
+		}
+		return diff;
+	}
+
+	/**
+	 * Executes the method once with the given arguments, and returns the execution time,
+	 * in nanoseconds
+	 *
+	 * @param args The arguments to pass to the method
+	 * @param dateFormatter A DateFormat to format the execution time with.
+	                        Can be {@code null}
+	 * @param doOutput if {@code true}, will print values in the output stream {@link out}
+	 *
+	 * @return The time the execution of the method took (in ns)
+	 */
+	public long timeNanos(Object[] args, DateFormat dateFormatter, boolean doOutput) {
+
+		long before, after, diff;
+
+		before = System.nanoTime();
+		try {
+			method.invoke(instance, args);
+		} catch(IllegalAccessException | InvocationTargetException e) {
+			throw new IllegalStateException(e);
+		}
+		after = System.nanoTime();
+
+		 diff = after - before;
+
+		if(doOutput) {
+			if(dateFormatter == null)
+				dateFormatter = new SimpleDateFormat("ss.SSS");
+
+			IOUtils.printHeader(out, method);
+
+			out.format("Time before = %d: ", before);
+			out.println(dateFormatter.format(before));
+			out.format("Time after  = %d: ", after);
+			out.println(dateFormatter.format(after));
+			out.format("Difference  = %d: ", diff);
+			out.println(dateFormatter.format(diff));
+			out.println();
+		}
+		return diff;
+	}
+
+	/**
+	 * Executes the method {@code times} times with the given arguments (the same every time), and returns the average
+	 * execution time
+	 *
+	 * @param args The arguments to pass to the method
+	 * @param useNanos if {@true}, will call {@link timeNanos} rather than {@link times}
+	 * @param dateFormatter A DateFormat to format the execution time with.
+	                        Can be {@code null}
+	 * @param allOutput if {@code true}, will print values in the output stream {@link out}
+	 *
+	 * @return The average time the execution of the method took out of {times} calls
+	 */
+	public double meanTime(Object[] args, int times, boolean useNanos, DateFormat dateFormatter, Boolean allOutput) {
+
+		long sum = 0L;
+		double average;
+		int i = times;
+		boolean loopOutput = allOutput == null ? false : allOutput;
+
+		if(useNanos)
+			while(i --> 0)
+				sum += timeNanos(args, dateFormatter, loopOutput);
+		else
+			while(i --> 0)
+				sum += time(args, dateFormatter, loopOutput);
+
+		average = ((double)sum) / ((double)times);
+
+		if(allOutput != null) {
+			IOUtils.printHeader(out, method);
+
+			out.format("Executed method %d times, for a total of %d %sseconds%n", times, sum, useNanos ? "nano" : "milli");
+			out.format("Mean execution time = %f%n%n", average);
+		}
+		return average;
+	}
+
+}

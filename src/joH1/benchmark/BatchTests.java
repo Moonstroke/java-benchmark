@@ -49,6 +49,9 @@ class BatchTests {
 			sbm_returnTrue.testNoException(noargs, new Boolean[] {Boolean.TRUE});
 			sbm_throwStatic.testException(noargs, checks(e -> e.getClass().equals(NullPointerException.class)));
 
+			bm_getValue.timeNanos(new Object[] {}, null, true);
+			sbm_returnTrue.meanTime(new Object[] {}, 100, false, null, false);
+
 			// Failing tests
 			sbm_returnTrue.log("Should fail");
 			sbm_returnTrue.testException(noargs, checks(e -> e instanceof Exception));
